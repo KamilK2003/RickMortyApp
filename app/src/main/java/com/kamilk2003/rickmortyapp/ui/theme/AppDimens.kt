@@ -51,7 +51,10 @@ data class AppDimens(
     val weight0_25x: Float = 0.25f,
     val weight0_5x: Float = 0.5f,
     val weight0_75x: Float = 0.75f,
-    val weight1x: Float = 1f
+    val weight1x: Float = 1f,
+
+    val maxLines1x: Int = 1,
+    val maxLines2x: Int = 2
 )
 
 val LocalAppDimens = staticCompositionLocalOf { AppDimens() }
