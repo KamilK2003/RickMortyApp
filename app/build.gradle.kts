@@ -62,6 +62,8 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.koin)
     implementation(libs.coil)
+    implementation(libs.retrofit)
+    implementation(libs.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
