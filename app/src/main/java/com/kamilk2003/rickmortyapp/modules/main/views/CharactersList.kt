@@ -3,7 +3,6 @@ package com.kamilk2003.rickmortyapp.modules.main.views
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,33 +16,42 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.kamilk2003.rickmortyapp.objects.models.Character
 import com.kamilk2003.rickmortyapp.ui.theme.appTypo
 import com.kamilk2003.rickmortyapp.ui.theme.dimens
 import com.kamilk2003.rickmortyapp.views.EmptyView
 import com.kamilk2003.rickmortyapp.views.EmptyViewConfig
+import com.kamilk2003.rickmortyapp.R
+import com.kamilk2003.rickmortyapp.utils.layout.mixedPaddingValues
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CharactersList( // TODO("Change data types in constructor after VM integration")
-    characters: List<String>,
-    isFavouriteCharacter: (String) -> Boolean,
+fun CharactersList(
+    scrollBehavior: TopAppBarScrollBehavior,
+    characters: List<Character>?,
+    isFavouriteCharacter: (character: Character) -> Boolean,
     emptyViewConfig: EmptyViewConfig,
-    onCharacterClick: () -> Unit
+    onCharacterClick: (character: Character) -> Unit
 ) {
 
     // MARK: - Stored Properties
@@ -52,14 +60,24 @@ fun CharactersList( // TODO("Change data types in constructor after VM integrati
 
     // MARK: - View
 
-    if (characters.isEmpty()) {
+    if (characters == null) {
+        EmptyView(
+            emptyViewConfig = EmptyViewConfig(
+                title = stringResource(id = R.string.app_main_screen_downloading_characters_title),
+                description = stringResource(id = R.string.app_main_screen_downloading_characters_description)
+            )
+        )
+    } else if (characters.isEmpty()) {
         EmptyView(emptyViewConfig = emptyViewConfig)
     } else {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(CharactersListConstants.columnsCount),
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
             state = lazyGridState,
-            contentPadding = PaddingValues(
+            contentPadding = mixedPaddingValues(
+                horizontal = MaterialTheme.dimens.space2x,
                 top = MaterialTheme.dimens.space2x,
                 bottom = CharactersListConstants.contentBottomPadding
             ),
@@ -83,7 +101,7 @@ fun CharactersList( // TODO("Change data types in constructor after VM integrati
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data("https://rickandmortyapi.com/api/character/avatar/1.jpeg") // TODO("Replace with proper implementation")
+                                .data(character.image)
                                 .crossfade(true)
                                 .build(),
                             contentDescription = null,
@@ -91,12 +109,12 @@ fun CharactersList( // TODO("Change data types in constructor after VM integrati
                                 .size(CharactersListConstants.imageSize)
                                 .clip(CircleShape)
                                 .align(Alignment.CenterHorizontally),
-                            placeholder = null, // TODO("Add placeholder in case of slow loading")
+                            placeholder = painterResource(id = R.drawable.person_placeholder),
                             contentScale = ContentScale.Crop
                         )
 
                         ResponsiveText(
-                            text = character,
+                            text = character.name,
                             modifier = Modifier
                                 .padding(top = MaterialTheme.dimens.space1x)
                                 .weight(MaterialTheme.dimens.weight1x)
@@ -107,7 +125,7 @@ fun CharactersList( // TODO("Change data types in constructor after VM integrati
                         )
 
                         Card(
-                            onClick = onCharacterClick,
+                            onClick = { onCharacterClick(character) },
                             modifier = Modifier
                                 .height(CharactersListConstants.buttonHeight)
                                 .fillMaxWidth(),

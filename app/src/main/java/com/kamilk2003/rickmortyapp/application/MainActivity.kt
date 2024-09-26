@@ -1,4 +1,4 @@
-package com.kamilk2003.rickmortyapp
+package com.kamilk2003.rickmortyapp.application
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

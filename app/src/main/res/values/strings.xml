@@ -6,11 +6,13 @@
     <string name="app_main_screen_title">Rick&amp;Morty Characters</string>
     <string name="app_main_screen_category_all_title">All</string>
     <string name="app_main_screen_category_favourite_title">Favourite</string>
+    <string name="app_main_screen_downloading_characters_title">Loading Data…</string>
+    <string name="app_main_screen_downloading_characters_description">Please wait while we fetch the latest data from the server. This may take a moment.</string>
     <string name="app_main_screen_empty_characters_title">Failed to fetch characters</string>
     <string name="app_main_screen_empty_characters_description">There are currently no characters available. Check your internet connection and try again.</string>
     <string name="app_main_screen_empty_characters_button_title">Try again</string>
-    <string name="app_main_screen_empty_favourite_characters_title">No favorite characters</string>
-    <string name="app_main_screen_empty_favourite_characters_description">No favorite characters have been added. To add a favorite character, press the heart on the character card.</string>
-    <string name="app_main_screen_snackbar_added_to_favourite">Character has been added to favorites</string>
-    <string name="app_main_screen_snackbar_deleted_from_favourite">Character has been removed from favorites</string>
+    <string name="app_main_screen_empty_favourite_characters_title">No favourite characters</string>
+    <string name="app_main_screen_empty_favourite_characters_description">No favourite characters have been added. To add a favorite character, press the heart on the character card.</string>
+    <string name="app_main_screen_snackbar_added_to_favourite">Character has been added to favourites</string>
+    <string name="app_main_screen_snackbar_deleted_from_favourite">Character has been removed from favourites</string>
 </resources>
