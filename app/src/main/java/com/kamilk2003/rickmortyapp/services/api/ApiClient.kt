@@ -1,4 +1,4 @@
-package com.kamilk2003.rickmortyapp.service.api
+package com.kamilk2003.rickmortyapp.services.api
 
 import com.kamilk2003.rickmortyapp.application.constants.AppConstants
 import retrofit2.Retrofit

@@ -1,8 +1,9 @@
-package com.kamilk2003.rickmortyapp.service.api
+package com.kamilk2003.rickmortyapp.services.api
 
 import android.content.ContentValues
 import android.util.Log
 import com.kamilk2003.rickmortyapp.objects.models.Character
+import com.kamilk2003.rickmortyapp.objects.models.ResponseCharacter
 import com.kamilk2003.rickmortyapp.objects.models.CharactersInfo
 import com.kamilk2003.rickmortyapp.service.api.mapper.toDomain
 import kotlinx.coroutines.Dispatchers
