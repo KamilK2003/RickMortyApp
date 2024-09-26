@@ -2,7 +2,7 @@ package com.kamilk2003.rickmortyapp.objects.models
 
 data class CharactersInfo (
     val info: Info,
-    val results: List<Character>
+    val results: List<ResponseCharacter>
 )
 
 data class Info (
@@ -12,7 +12,7 @@ data class Info (
     val prev: String? = null
 )
 
-data class Character (
+data class ResponseCharacter (
     val id: Long,
     val name: String,
     val status: String,

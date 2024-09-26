@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.util.Log
 import com.kamilk2003.rickmortyapp.objects.models.Character
 import com.kamilk2003.rickmortyapp.objects.models.CharactersInfo
+import com.kamilk2003.rickmortyapp.service.api.mapper.toDomain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -29,7 +30,7 @@ class CharactersApiServiceImpl: CharactersApiService {
                 override fun onResponse(call: Call<CharactersInfo>, response: Response<CharactersInfo>) {
                     if (response.isSuccessful) {
                         val responseCharactersInfo = response.body()
-                        completion(responseCharactersInfo?.results)
+                        completion(responseCharactersInfo?.results.toDomain())
                     } else {
                         Log.i(ContentValues.TAG, "$response")
                         completion(null)
