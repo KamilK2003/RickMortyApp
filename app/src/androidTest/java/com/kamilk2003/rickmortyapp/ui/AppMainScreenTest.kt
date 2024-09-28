@@ -10,8 +10,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/*
+    In ideal scenario, viewModel with all its services should be mocked using proper library,
+    but for purpose of this example app, I think that it's enough to present my implementation.
+    Please also note, that this tests will pass only on the fresh app install.
+*/
 @RunWith(AndroidJUnit4::class)
-class AppMainScreenTest { // INFO("I know that the ViewModel should be mocked, but I think we can assume that the API calls will work correctly and the list will load")
+class AppMainScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()

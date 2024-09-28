@@ -4,7 +4,7 @@ import android.content.ContentValues
 import android.util.Log
 import com.kamilk2003.rickmortyapp.objects.models.Character
 import com.kamilk2003.rickmortyapp.objects.models.CharactersInfo
-import com.kamilk2003.rickmortyapp.service.api.mapper.toDomain
+import com.kamilk2003.rickmortyapp.services.api.mapper.toDomain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Call
