@@ -170,7 +170,7 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                     Tabs.FAVOURITE -> {
                         CharactersList(
                             scrollBehavior = scrollBehavior,
-                            characters = state.favouriteCharacter,
+                            characters = state.favouriteCharacters,
                             isFavouriteCharacter = state::isFavourite,
                             emptyViewConfig = EmptyViewConfig(
                                 title = stringResource(id = R.string.app_main_screen_empty_favourite_characters_title),

@@ -62,7 +62,7 @@ class AppMainScreenViewModel(
         viewModelScope.launch {
             appCRUDService.allCharacters.asFlow().collectLatest { characters ->
                 updateState { currentState ->
-                    currentState.copy(favouriteCharacter = characters ?: emptyList())
+                    currentState.copy(favouriteCharacters = characters ?: emptyList())
                 }
             }
         }
