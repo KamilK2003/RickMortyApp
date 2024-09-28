@@ -11,7 +11,7 @@ class RoomCharacter {
     var name: String = ""
     var image: String = ""
 
-    constructor() {}
+    constructor()
 
     constructor(character: Character) {
         this.id = character.id

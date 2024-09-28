@@ -31,7 +31,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,8 +39,6 @@ import coil.request.ImageRequest
 import com.kamilk2003.rickmortyapp.objects.models.Character
 import com.kamilk2003.rickmortyapp.ui.theme.appTypo
 import com.kamilk2003.rickmortyapp.ui.theme.dimens
-import com.kamilk2003.rickmortyapp.views.EmptyView
-import com.kamilk2003.rickmortyapp.views.EmptyViewConfig
 import com.kamilk2003.rickmortyapp.R
 import com.kamilk2003.rickmortyapp.utils.layout.mixedPaddingValues
 import com.kamilk2003.rickmortyapp.views.ResponsiveText
@@ -51,9 +48,8 @@ import com.kamilk2003.rickmortyapp.views.ResponsiveText
 fun CharactersList(
     modifier: Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
-    characters: List<Character>?,
-    isFavouriteCharacter: (character: Character) -> Boolean,
-    emptyViewConfig: EmptyViewConfig,
+    characters: List<Character>,
+    favouriteCharacters: List<Character>,
     onCharacterClick: (character: Character) -> Unit
 ) {
 
@@ -61,102 +57,91 @@ fun CharactersList(
 
     val lazyGridState = rememberLazyStaggeredGridState()
 
+    fun isFavouriteCharacter(character: Character): Boolean {
+        return favouriteCharacters.contains(character)
+    }
+
     // MARK: - View
 
-    if (characters == null) {
-        EmptyView(
-            modifier = Modifier.testTag("null_characters_list"),
-            emptyViewConfig = EmptyViewConfig(
-                title = stringResource(id = R.string.app_main_screen_downloading_characters_title),
-                description = stringResource(id = R.string.app_main_screen_downloading_characters_description)
-            )
-        )
-    } else if (characters.isEmpty()) {
-        EmptyView(
-            modifier = Modifier.testTag("empty_characters_list"),
-            emptyViewConfig = emptyViewConfig
-        )
-    } else {
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(CharactersListConstants.columnsCount),
-            modifier = modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            state = lazyGridState,
-            contentPadding = mixedPaddingValues(
-                horizontal = MaterialTheme.dimens.space2x,
-                top = MaterialTheme.dimens.space2x,
-                bottom = CharactersListConstants.contentBottomPadding
-            ),
-            verticalItemSpacing = MaterialTheme.dimens.space2x,
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.space2x)
-        ) {
-            items(characters) { character ->
-                Card(
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(CharactersListConstants.columnsCount),
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        state = lazyGridState,
+        contentPadding = mixedPaddingValues(
+            horizontal = MaterialTheme.dimens.space2x,
+            top = MaterialTheme.dimens.space2x,
+            bottom = CharactersListConstants.contentBottomPadding
+        ),
+        verticalItemSpacing = MaterialTheme.dimens.space2x,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.space2x)
+    ) {
+        items(characters) { character ->
+            Card(
+                modifier = Modifier
+                    .testTag("character_${character.id}")
+                    .height(CharactersListConstants.cardHeight),
+                shape = RoundedCornerShape(MaterialTheme.dimens.cornerRadius1x),
+                elevation = CardDefaults.cardElevation(MaterialTheme.dimens.elevation0_5x),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Column(
                     modifier = Modifier
-                        .testTag("character_${character.id}")
-                        .height(CharactersListConstants.cardHeight),
-                    shape = RoundedCornerShape(MaterialTheme.dimens.cornerRadius1x),
-                    elevation = CardDefaults.cardElevation(MaterialTheme.dimens.elevation0_5x),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        .padding(MaterialTheme.dimens.space1x)
                 ) {
-                    Column(
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(character.image)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
                         modifier = Modifier
-                            .padding(MaterialTheme.dimens.space1x)
+                            .size(CharactersListConstants.imageSize)
+                            .clip(CircleShape)
+                            .align(Alignment.CenterHorizontally),
+                        placeholder = painterResource(id = R.drawable.person_placeholder),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    ResponsiveText(
+                        text = character.name,
+                        modifier = Modifier
+                            .padding(top = MaterialTheme.dimens.space1x)
+                            .weight(MaterialTheme.dimens.weight1x)
+                            .align(Alignment.CenterHorizontally),
+                        textAlign = TextAlign.Center,
+                        textStyle = MaterialTheme.appTypo.semiboldRoboto2,
+                        maxLines = MaterialTheme.dimens.maxLines2x
+                    )
+
+                    Card(
+                        onClick = { onCharacterClick(character) },
+                        modifier = Modifier
+                            .testTag("change_favourite_state_${character.id}")
+                            .height(CharactersListConstants.buttonHeight)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(MaterialTheme.dimens.cornerRadius0_5x),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isFavouriteCharacter(character)) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.secondaryContainer
+                        )
                     ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(character.image)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(CharactersListConstants.imageSize)
-                                .clip(CircleShape)
-                                .align(Alignment.CenterHorizontally),
-                            placeholder = painterResource(id = R.drawable.person_placeholder),
-                            contentScale = ContentScale.Crop
-                        )
-
-                        ResponsiveText(
-                            text = character.name,
-                            modifier = Modifier
-                                .padding(top = MaterialTheme.dimens.space1x)
-                                .weight(MaterialTheme.dimens.weight1x)
-                                .align(Alignment.CenterHorizontally),
-                            textAlign = TextAlign.Center,
-                            textStyle = MaterialTheme.appTypo.semiboldRoboto2,
-                            maxLines = MaterialTheme.dimens.maxLines2x
-                        )
-
-                        Card(
-                            onClick = { onCharacterClick(character) },
-                            modifier = Modifier
-                                .testTag("change_favourite_state_${character.id}")
-                                .height(CharactersListConstants.buttonHeight)
-                                .fillMaxWidth(),
-                            shape = RoundedCornerShape(MaterialTheme.dimens.cornerRadius0_5x),
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isFavouriteCharacter(character)) MaterialTheme.colorScheme.primaryContainer
-                                else MaterialTheme.colorScheme.secondaryContainer
-                            )
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Favorite,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(CharactersListConstants.iconSize),
-                                    tint = if (isFavouriteCharacter(character)) MaterialTheme.colorScheme.secondaryContainer
-                                    else MaterialTheme.colorScheme.primaryContainer
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(CharactersListConstants.iconSize),
+                                tint = if (isFavouriteCharacter(character)) MaterialTheme.colorScheme.secondaryContainer
+                                else MaterialTheme.colorScheme.primaryContainer
+                            )
                         }
                     }
                 }

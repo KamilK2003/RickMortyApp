@@ -13,14 +13,14 @@ import com.kamilk2003.rickmortyapp.objects.models.room.RoomCharacter
 abstract class AppRoomDatabase: RoomDatabase() {
     abstract fun careDao(): AppDao
     companion object {
-        private var INSTANCE: AppRoomDatabase? = null
+        private var instance: AppRoomDatabase? = null
 
         fun getInstance(context: Context): AppRoomDatabase {
             synchronized(this) {
-                var instance = INSTANCE
+                var localInstance = instance
 
-                if (instance == null) {
-                    instance = Room
+                if (localInstance == null) {
+                    localInstance = Room
                         .databaseBuilder(
                             context.applicationContext,
                             AppRoomDatabase::class.java,
@@ -29,9 +29,9 @@ abstract class AppRoomDatabase: RoomDatabase() {
                         .fallbackToDestructiveMigration()
                         .build()
 
-                    INSTANCE = instance
+                    instance = localInstance
                 }
-                return instance
+                return localInstance
             }
         }
     }

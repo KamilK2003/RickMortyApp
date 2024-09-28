@@ -79,28 +79,28 @@ class AppMainScreenModelTest : BaseTest() {
     }
 
     @Test
-    fun `manageFavouriteCharacters deletes character from local database when it is already favourite`() = runTest {
+    fun `switchFavouriteState deletes character from local database when it is already favourite`() = runTest {
         val characters = makeCharactersList()
 
         appMainScreenModel.updateState {
             it.copy(favouriteCharacters = characters)
         }
 
-        appMainScreenModel.manageFavouriteCharacters(characters.first())
+        appMainScreenModel.switchFavouriteState(characters.first())
 
         coVerify { appCRUDService.deleteCharacter(characters.first().id.toInt()) }
         coVerify(exactly = 0) { appCRUDService.insertCharacter(any()) }
     }
 
     @Test
-    fun `manageFavouriteCharacters inserts character to local database when it is not favourite`() = runTest {
+    fun `switchFavouriteState inserts character to local database when it is not favourite`() = runTest {
         val characters = makeCharactersList()
 
         appMainScreenModel.updateState {
             it.copy(favouriteCharacters = listOf(characters.last()))
         }
 
-        appMainScreenModel.manageFavouriteCharacters(characters.first())
+        appMainScreenModel.switchFavouriteState(characters.first())
 
         coVerify { appCRUDService.insertCharacter(any()) }
         coVerify(exactly = 0) { appCRUDService.deleteCharacter(any()) }

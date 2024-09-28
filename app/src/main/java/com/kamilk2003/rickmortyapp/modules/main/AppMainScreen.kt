@@ -21,10 +21,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +38,7 @@ import com.kamilk2003.rickmortyapp.modules.main.views.CharactersList
 import com.kamilk2003.rickmortyapp.views.ResponsiveText
 import com.kamilk2003.rickmortyapp.ui.theme.appTypo
 import com.kamilk2003.rickmortyapp.ui.theme.dimens
+import com.kamilk2003.rickmortyapp.views.EmptyView
 import com.kamilk2003.rickmortyapp.views.EmptyViewConfig
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
@@ -59,15 +57,14 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
 
     val context = LocalContext.current
 
-    var selectedTab by rememberSaveable { mutableStateOf(Tabs.ALL) }
-    val pageState = rememberPagerState(initialPage = selectedTab.ordinal) { 2 }
+    val pageState = rememberPagerState(initialPage = state.selectedTab.ordinal) { 2 }
 
     // MARK: - Launched Effects
 
     LaunchedEffect(Unit) {
         viewModel.action.collectLatest { action ->
             when (action) {
-                is AppMainScreenAction.IsFavouriteFlagChanged -> {
+                is AppMainScreenAction.FavouriteFlagChanged -> {
                     snackbarState.showSnackbar(
                         if (action.isFavourite) context.getString(R.string.app_main_screen_snackbar_added_to_favourite)
                         else context.getString(R.string.app_main_screen_snackbar_deleted_from_favourite)
@@ -77,8 +74,8 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
         }
     }
 
-    LaunchedEffect(selectedTab) {
-        pageState.animateScrollToPage(selectedTab.ordinal)
+    LaunchedEffect(state.selectedTab) {
+        pageState.animateScrollToPage(state.selectedTab.ordinal)
     }
 
     // MARK: - View
@@ -116,7 +113,7 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
         ) {
             TabRow(
                 modifier = Modifier.fillMaxWidth(),
-                selectedTabIndex = selectedTab.ordinal
+                selectedTabIndex = state.selectedTab.ordinal
             ) {
                 Tabs.entries.forEach { tab ->
                     Tab(
@@ -126,8 +123,8 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                                 else MaterialTheme.dimens.weight1x
                             )
                             .testTag(tab.name),
-                        selected = selectedTab == tab,
-                        onClick = { selectedTab = tab },
+                        selected = state.selectedTab == tab,
+                        onClick = { viewModel.onTabChange(tab = tab) },
                         text = {
                             Text(
                                 text = stringResource(id = tab.category),
@@ -153,38 +150,33 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                 },
                 contentAlignment = Alignment.Center
             ) {
-                when (selectedTab) {
-                    Tabs.ALL -> {
-                        CharactersList(
-                            modifier = Modifier.testTag("all_characters_list"),
-                            scrollBehavior = scrollBehavior,
-                            characters = state.characters,
-                            isFavouriteCharacter = state::isFavourite,
-                            emptyViewConfig = EmptyViewConfig(
-                                title = stringResource(id = R.string.app_main_screen_empty_characters_title),
-                                description = stringResource(id = R.string.app_main_screen_empty_characters_description),
-                                buttonTitle = stringResource(id = R.string.app_main_screen_empty_characters_button_title),
-                                onClick = {
-                                    viewModel.changeRefreshingState(true)
-                                    viewModel.fetchCharacters()
-                                }
-                            ),
-                            onCharacterClick = viewModel::manageFavouriteCharacters
+                if (state.getCharactersList() == null) {
+                    EmptyView(
+                        modifier = Modifier.testTag("null_characters_list"),
+                        emptyViewConfig = EmptyViewConfig(
+                            title = stringResource(id = R.string.app_main_screen_downloading_characters_title),
+                            description = stringResource(id = R.string.app_main_screen_downloading_characters_description)
                         )
-                    }
-                    Tabs.FAVOURITE -> {
-                        CharactersList(
-                            modifier = Modifier.testTag("favourites_characters_list"),
-                            scrollBehavior = scrollBehavior,
-                            characters = state.favouriteCharacters,
-                            isFavouriteCharacter = state::isFavourite,
-                            emptyViewConfig = EmptyViewConfig(
-                                title = stringResource(id = R.string.app_main_screen_empty_favourite_characters_title),
-                                description = stringResource(id = R.string.app_main_screen_empty_favourite_characters_description)
-                            ),
-                            onCharacterClick = viewModel::manageFavouriteCharacters
+                    )
+                } else if (state.getCharactersList()?.isEmpty() == true) {
+                    EmptyView(
+                        modifier = Modifier.testTag("empty_characters_list"),
+                        emptyViewConfig = state.getEmptyViewConfig(
+                            context = context,
+                            onClick = {
+                                viewModel.changeRefreshingState(true)
+                                viewModel.fetchCharacters()
+                            }
                         )
-                    }
+                    )
+                } else {
+                    CharactersList(
+                        modifier = Modifier.testTag(state.getTestTag()),
+                        scrollBehavior = scrollBehavior,
+                        characters = state.getCharactersList().orEmpty(),
+                        favouriteCharacters = state.getFavouriteCharactersList().orEmpty(),
+                        onCharacterClick = viewModel::switchFavouriteState
+                    )
                 }
             }
         }
