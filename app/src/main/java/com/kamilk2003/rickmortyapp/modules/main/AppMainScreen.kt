@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,7 +38,7 @@ import com.kamilk2003.rickmortyapp.modules.main.data.Tabs
 import com.kamilk2003.rickmortyapp.modules.main.viewmodel.AppMainScreenAction
 import com.kamilk2003.rickmortyapp.modules.main.viewmodel.AppMainScreenViewModel
 import com.kamilk2003.rickmortyapp.modules.main.views.CharactersList
-import com.kamilk2003.rickmortyapp.modules.main.views.ResponsiveText
+import com.kamilk2003.rickmortyapp.views.ResponsiveText
 import com.kamilk2003.rickmortyapp.ui.theme.appTypo
 import com.kamilk2003.rickmortyapp.ui.theme.dimens
 import com.kamilk2003.rickmortyapp.views.EmptyViewConfig
@@ -100,6 +101,8 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
             SnackbarHost(hostState = snackbarState) {
                 Snackbar(
                     snackbarData = it,
+                    modifier = Modifier
+                        .testTag("info_snackbar"),
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -121,7 +124,8 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                             .fillMaxWidth(
                                 if (tab.ordinal == 0) MaterialTheme.dimens.weight0_5x
                                 else MaterialTheme.dimens.weight1x
-                            ),
+                            )
+                            .testTag(tab.name),
                         selected = selectedTab == tab,
                         onClick = { selectedTab = tab },
                         text = {
@@ -152,6 +156,7 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                 when (selectedTab) {
                     Tabs.ALL -> {
                         CharactersList(
+                            modifier = Modifier.testTag("all_characters_list"),
                             scrollBehavior = scrollBehavior,
                             characters = state.characters,
                             isFavouriteCharacter = state::isFavourite,
@@ -169,6 +174,7 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                     }
                     Tabs.FAVOURITE -> {
                         CharactersList(
+                            modifier = Modifier.testTag("favourites_characters_list"),
                             scrollBehavior = scrollBehavior,
                             characters = state.favouriteCharacters,
                             isFavouriteCharacter = state::isFavourite,

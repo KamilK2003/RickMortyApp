@@ -1,4 +1,4 @@
-package com.kamilk2003.rickmortyapp
+package com.kamilk2003.rickmortyapp.viewmodel
 
 import app.cash.turbine.test
 import com.kamilk2003.rickmortyapp.helpers.BaseTest

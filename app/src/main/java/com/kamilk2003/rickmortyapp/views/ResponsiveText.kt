@@ -1,4 +1,4 @@
-package com.kamilk2003.rickmortyapp.modules.main.views
+package com.kamilk2003.rickmortyapp.views
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

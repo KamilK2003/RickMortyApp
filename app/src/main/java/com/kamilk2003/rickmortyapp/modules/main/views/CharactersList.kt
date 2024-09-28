@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -43,10 +44,12 @@ import com.kamilk2003.rickmortyapp.views.EmptyView
 import com.kamilk2003.rickmortyapp.views.EmptyViewConfig
 import com.kamilk2003.rickmortyapp.R
 import com.kamilk2003.rickmortyapp.utils.layout.mixedPaddingValues
+import com.kamilk2003.rickmortyapp.views.ResponsiveText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharactersList(
+    modifier: Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
     characters: List<Character>?,
     isFavouriteCharacter: (character: Character) -> Boolean,
@@ -62,17 +65,21 @@ fun CharactersList(
 
     if (characters == null) {
         EmptyView(
+            modifier = Modifier.testTag("null_characters_list"),
             emptyViewConfig = EmptyViewConfig(
                 title = stringResource(id = R.string.app_main_screen_downloading_characters_title),
                 description = stringResource(id = R.string.app_main_screen_downloading_characters_description)
             )
         )
     } else if (characters.isEmpty()) {
-        EmptyView(emptyViewConfig = emptyViewConfig)
+        EmptyView(
+            modifier = Modifier.testTag("empty_characters_list"),
+            emptyViewConfig = emptyViewConfig
+        )
     } else {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(CharactersListConstants.columnsCount),
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             state = lazyGridState,
@@ -87,6 +94,7 @@ fun CharactersList(
             items(characters) { character ->
                 Card(
                     modifier = Modifier
+                        .testTag("character_${character.id}")
                         .height(CharactersListConstants.cardHeight),
                     shape = RoundedCornerShape(MaterialTheme.dimens.cornerRadius1x),
                     elevation = CardDefaults.cardElevation(MaterialTheme.dimens.elevation0_5x),
@@ -127,6 +135,7 @@ fun CharactersList(
                         Card(
                             onClick = { onCharacterClick(character) },
                             modifier = Modifier
+                                .testTag("change_favourite_state_${character.id}")
                                 .height(CharactersListConstants.buttonHeight)
                                 .fillMaxWidth(),
                             shape = RoundedCornerShape(MaterialTheme.dimens.cornerRadius0_5x),
