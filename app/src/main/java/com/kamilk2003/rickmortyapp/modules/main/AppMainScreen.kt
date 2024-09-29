@@ -99,7 +99,7 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                 Snackbar(
                     snackbarData = it,
                     modifier = Modifier
-                        .testTag("info_snackbar"),
+                        .testTag(stringResource(id = R.string.info_snackbar_tag)),
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -152,7 +152,8 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
             ) {
                 if (state.getCharactersList() == null) {
                     EmptyView(
-                        modifier = Modifier.testTag("null_characters_list"),
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.null_characters_list_tag)),
                         emptyViewConfig = EmptyViewConfig(
                             title = stringResource(id = R.string.app_main_screen_downloading_characters_title),
                             description = stringResource(id = R.string.app_main_screen_downloading_characters_description)
@@ -160,7 +161,8 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                     )
                 } else if (state.getCharactersList()?.isEmpty() == true) {
                     EmptyView(
-                        modifier = Modifier.testTag("empty_characters_list"),
+                        modifier = Modifier
+                            .testTag(stringResource(id = R.string.empty_characters_list_tag)),
                         emptyViewConfig = state.getEmptyViewConfig(
                             context = context,
                             onClick = {
@@ -171,7 +173,8 @@ fun AppMainScreen(viewModel: AppMainScreenViewModel = koinViewModel()) {
                     )
                 } else {
                     CharactersList(
-                        modifier = Modifier.testTag(state.getTestTag()),
+                        modifier = Modifier
+                            .testTag(stringResource(id = state.getTestTag())),
                         scrollBehavior = scrollBehavior,
                         characters = state.getCharactersList().orEmpty(),
                         favouriteCharacters = state.getFavouriteCharactersList().orEmpty(),

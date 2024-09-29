@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -80,7 +81,12 @@ fun CharactersList(
         items(characters) { character ->
             Card(
                 modifier = Modifier
-                    .testTag("character_${character.id}")
+                    .testTag(
+                        stringResource(
+                            id = R.string.character_card_tag,
+                            "${character.id}"
+                        )
+                    )
                     .height(CharactersListConstants.cardHeight),
                 shape = RoundedCornerShape(MaterialTheme.dimens.cornerRadius1x),
                 elevation = CardDefaults.cardElevation(MaterialTheme.dimens.elevation0_5x),
@@ -121,7 +127,12 @@ fun CharactersList(
                     Card(
                         onClick = { onCharacterClick(character) },
                         modifier = Modifier
-                            .testTag("change_favourite_state_${character.id}")
+                            .testTag(
+                                stringResource(
+                                    id = R.string.character_favourite_button_tag,
+                                    "${character.id}"
+                                )
+                            )
                             .height(CharactersListConstants.buttonHeight)
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(MaterialTheme.dimens.cornerRadius0_5x),

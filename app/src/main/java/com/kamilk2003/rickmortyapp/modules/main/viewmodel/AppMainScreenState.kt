@@ -38,9 +38,8 @@ data class AppMainScreenState(
         )
     }
 
-    // TODO("Move all test tag strings to string.xml")
-    fun getTestTag(): String =
-        if (selectedTab == Tabs.ALL) "all_characters_list" else "favourites_characters_list"
+    fun getTestTag(): Int = if (selectedTab == Tabs.ALL) R.string.all_characters_list_tag
+        else R.string.favourite_characters_list_tag
 
     fun getFavState(character: Character): Boolean =
         favouriteCharacters.contains(character)

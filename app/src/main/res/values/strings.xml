@@ -15,4 +15,14 @@
     <string name="app_main_screen_empty_favourite_characters_description">No favourite characters have been added. To add a favorite character, press the heart on the character card.</string>
     <string name="app_main_screen_snackbar_added_to_favourite">Character has been added to favourites</string>
     <string name="app_main_screen_snackbar_deleted_from_favourite">Character has been removed from favourites</string>
+
+    // MARK: - Test Tags
+
+    <string name="all_characters_list_tag">all_characters_list</string>
+    <string name="favourite_characters_list_tag">favourites_characters_list</string>
+    <string name="info_snackbar_tag">info_snackbar</string>
+    <string name="null_characters_list_tag">null_characters_list</string>
+    <string name="empty_characters_list_tag">empty_characters_list</string>
+    <string name="character_card_tag">character_%s</string>
+    <string name="character_favourite_button_tag">change_favourite_state_%s</string>
 </resources>
