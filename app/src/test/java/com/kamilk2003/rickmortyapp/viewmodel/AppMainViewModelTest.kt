@@ -9,6 +9,7 @@ import com.kamilk2003.rickmortyapp.services.room.AppCRUDService
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.invoke
 import io.mockk.mockk
 import io.mockk.spyk
@@ -61,6 +62,8 @@ class AppMainScreenModelTest : BaseTest() {
     fun `fetchCharacters updates state with characters and stops refreshing`() = runTest {
         val characters = makeCharactersList()
 
+        every { appCRUDService.allCharacters.value } returns characters
+
         coEvery {
             charactersApiService.getCharacters(captureLambda())
         } answers {
@@ -70,6 +73,34 @@ class AppMainScreenModelTest : BaseTest() {
         appMainScreenModel.fetchCharacters()
 
         coVerify { charactersApiService.getCharacters(any()) }
+
+        appMainScreenModel.state.test {
+            val state = this.expectMostRecentItem()
+            assertEquals(characters, state.characters)
+            assertFalse(state.isRefreshing)
+        }
+    }
+
+    @Test
+    fun `fetchCharacters updates state with characters and stops refreshing, deprecated characters are removed from local database`() = runTest {
+        val characters = makeCharactersList()
+        val deprecatedCharacter = listOf(makeCharactersList().first().copy(name = "Jack"))
+
+        every { appCRUDService.allCharacters.value } returns deprecatedCharacter
+        coEvery {
+            charactersApiService.getCharacters(captureLambda())
+        } answers {
+            lambda<(List<Character>?) -> Unit>().invoke(characters)
+        }
+
+        appMainScreenModel.fetchCharacters()
+
+        coVerify { charactersApiService.getCharacters(any()) }
+
+        val capturedDeprecatedCharacters = mutableListOf<List<Character>>()
+        coVerify { appCRUDService.deleteCharacters(capture(capturedDeprecatedCharacters)) }
+
+        assertTrue(capturedDeprecatedCharacters.first() == deprecatedCharacter)
 
         appMainScreenModel.state.test {
             val state = this.expectMostRecentItem()

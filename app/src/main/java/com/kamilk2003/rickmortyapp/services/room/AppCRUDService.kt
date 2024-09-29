@@ -9,6 +9,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/*
+    I was wondering whether to implement a mechanism to save all characters in case, for example, we lose the internet connection.
+    However, I decided that according to the documentation, only favorite characters should be stored in the database
+*/
+
 class AppCRUDService(context: Context) {
 
     // MARK: - Stored properties
@@ -26,6 +31,14 @@ class AppCRUDService(context: Context) {
     fun deleteCharacter(characterId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             appDao.deleteCharacter(characterId)
+        }
+    }
+
+    fun deleteCharacters(characters: List<Character>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            for (character in characters) {
+                appDao.deleteCharacter(character.id.toInt())
+            }
         }
     }
 

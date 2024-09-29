@@ -13,7 +13,7 @@ data class AppMainScreenState(
     var selectedTab: Tabs = Tabs.ALL
 ) {
     fun getCharactersList() : List<Character>? {
-        return if (selectedTab == Tabs.ALL) getAllCharacters() else getFavouriteCharactersList()
+        return if (selectedTab == Tabs.ALL) characters else getFavouriteCharactersList()
     }
 
     fun getEmptyViewConfig(
@@ -46,5 +46,4 @@ data class AppMainScreenState(
 
     fun getFavouriteCharactersList(): List<Character>? =
         characters?.filter { getFavState(it) }
-    private fun getAllCharacters(): List<Character>? = characters
 }

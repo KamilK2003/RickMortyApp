@@ -8,13 +8,14 @@ import com.kamilk2003.rickmortyapp.objects.models.Character
 import com.kamilk2003.rickmortyapp.objects.models.room.RoomCharacter
 import com.kamilk2003.rickmortyapp.services.api.CharactersApiService
 import com.kamilk2003.rickmortyapp.services.room.AppCRUDService
+import com.kamilk2003.rickmortyapp.utils.general.notContains
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class AppMainScreenViewModel(
     private val appCRUDService: AppCRUDService,
     private val charactersApiService: CharactersApiService
-): BaseViewModel<AppMainScreenState, AppMainScreenAction>() { // TODO("Add saving all characters in local database")
+): BaseViewModel<AppMainScreenState, AppMainScreenAction>() {
 
     // MARK: - Initializers
 
@@ -32,6 +33,14 @@ class AppMainScreenViewModel(
             charactersApiService.getCharacters { fetchedCharacters ->
                 updateState { currentState ->
                     val characters = fetchedCharacters ?: emptyList()
+
+                    if (characters.isNotEmpty()) {
+                        val deprecatedFavoriteCharacters = appCRUDService.allCharacters.value
+                            ?.filter { characters.notContains(it) } ?: emptyList()
+
+                        appCRUDService.deleteCharacters(deprecatedFavoriteCharacters)
+                    }
+
                     currentState.copy(
                         characters = characters,
                         isRefreshing = false
@@ -66,7 +75,7 @@ class AppMainScreenViewModel(
         }
     }
 
-    private fun observeFavouriteCharacters() { // TODO("Think about how to handle the absence of a favorite character in the list coming from the API")
+    private fun observeFavouriteCharacters() {
         viewModelScope.launch {
             appCRUDService.allCharacters
                 .asFlow()
